@@ -1,46 +1,44 @@
-import { useEffect } from "react"
+import { useTransactions } from '../../hooks/useTransactions';
 import { Container } from "./styles";
 
-import api from '../../services/api';
 
 function TransactionsTable() {
-
-    useEffect(() => {
-        api.get('/transactions')
-        .then(response => console.log(response.data))
-    },[])
+  const {transactions} = useTransactions();
+  
 
   return (
     <Container>
-        <table>
-            <thead>
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Preço</th>
+            <th>Categoria</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+            {transactions.map(transaction => (
                 <tr>
-                    <th>Título</th>
-                    <th>Preço</th>
-                    <th>Categoria</th>
-                    <th>Data</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Desenvolvimento de site</td>
-                    <td className="deposit">R$ 12.000,00</td>
-                    <td>Venda</td>
-                    <td>13/04/2021</td>
-                </tr>
+                <td key={transaction.id}>{transaction.title}</td>
+                <td className={transaction.type}>
+                    {new Intl.NumberFormat('pt-BR',{
+                        style:'currency',
+                        currency:'BRL'
 
-                <tr>
-                    <td>Aluguel do apartamento</td>
-                    <td className="withdraw">- R$ 1.200,00</td>
-                    <td>Casa</td>
-                    <td>27/03/2021</td>
+                    }).format(transaction.amount)}
+                </td>
+                <td>{transaction.category}</td>
+                <td>
+                    {new Intl.DateTimeFormat('pt-BR').format(new Date(transaction.createdAt))}
+                </td>
+
                 </tr>
-
-            </tbody>
-        </table>
-
+            ))}
+        </tbody>
+      </table>
     </Container>
-  )
+  );
 }
 
-export default TransactionsTable
+export default TransactionsTable;
